@@ -1,6 +1,6 @@
 = RMV MCP Server
 
-== TD;DR
+== TL;DR
 
 MCP Server to enable LLMs to use data on trains, stations and connections provided by RMV, Germany.
 
@@ -8,7 +8,7 @@ MCP Server to enable LLMs to use data on trains, stations and connections provid
 
 RMV MCP Server is a fastmcp-based MCP server that exposes RMV public transport data to LLMs. It uses the RMV API to fetch data on stations, connections, and departures.
 
-=== Architeture Dioagram
+=== Architecture Diagram
 [source,mermaid]
 ....
 
@@ -34,17 +34,17 @@ graph TD
 ....
 == Prerequisites
 
-To use these server you need to acquire a free RMV API key. You can request one from RMV via the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
-Once vou have it, you can enter it in Claudes config file.
-For local testing you should pit it in the `.env` file.
+To use this server you need to acquire a free RMV API key. You can request one from RMV via the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
+Once you have it, you can enter it in Claude's config file.
+For local testing you should put it in the `.env` file.
 
 == How to use
 
 I'll show you how to run the RMV MCP server locally using UV and how to connect it to Claude Desktop.
 To make the service known to Claude Desktop you need to add its configuration to the Claude Desktop config file (see below).
 
-## Claude Desktop Config
-```json
+=== Claude Desktop Config
+[source,json]
 {
     "mcpServers": {
 ...
@@ -65,25 +65,30 @@ To make the service known to Claude Desktop you need to add its configuration to
 
 ```
 
-## Dev
+=== Dev
 
-### Run Tests 
-```
+==== Run Tests 
+[source,bash]
+----
 uv run pytest -s
-```
-### Run MCP Servr in Dev Mode
+----
+
+==== Run MCP Server in Dev Mode
 
 FastMCP provides a development mode that allows you to run and test your MCP server locally. You can use the following commands to start the server in dev mode:
 
-```
+[source,bash]
+----
 uv run fastmcp dev main.py 
-``` 
+---- 
 
 This will start the MCP server and open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
 It will open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
+
 1. Connect to your MCP sever (left column)
-2. Seleczt `Tools`from the top menu.
-3. Click `List Tools` below. It should reveal `search_stations` and `get_connections`.
+2. Select `Tools` from the top menu.
+3. Click `List Tools` below.
+    It should reveal `search_stations` and `get_connections`.
    Select one of them.
 4. The right hand side enables you to run the tool and inspect the results.
 

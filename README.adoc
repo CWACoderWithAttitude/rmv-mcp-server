@@ -68,6 +68,8 @@ To make the service known to Claude Desktop you need to add its configuration to
 
 === Dev
 
+> I like Makefiles. I use them as part of my documentation. You can find some of the mentioned commands in the provided `Makefile`.
+
 ==== Run Tests
 
 [source,bash]

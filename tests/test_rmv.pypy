@@ -1,0 +1,102 @@
+import sys
+import os
+import ast
+import pytest
+
+# Ensure the package folder (basic) is on sys.path so we can import rmv.py
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+import rmv  # noqa: E402
+
+@pytest.mark.asyncio
+async def test_search_stations_success(monkeypatch):
+    async def fake_rmv_api_call(endpoint, params):
+        return {
+            "stopLocationOrCoordLocation": [
+                {
+                    "StopLocation": {
+                        "extId": "123",
+                        "name": "Frankfurt Hbf",
+                        "lat": "50.110",
+                        "lon": "8.682",
+                        "productAtStop": ["S-Bahn", "U-Bahn"]
+                    }
+                }
+            ]
+        }
+
+    monkeypatch.setattr(rmv, "rmv_api_call", fake_rmv_api_call)
+    res = await rmv.search_stations("Frankfurt", max_results=5)
+    data = ast.literal_eval(res)
+    assert data["count"] == 1
+    assert data["stations"][0]["id"] == "123"
+    assert data["stations"][0]["name"] == "Frankfurt Hbf"
+
+@pytest.mark.asyncio
+async def test_search_stations_no_results(monkeypatch):
+    async def fake_rmv_api_call(endpoint, params):
+        # simulate response without stopLocationOrCoordLocation
+        return {"someOtherKey": []}
+
+    monkeypatch.setattr(rmv, "rmv_api_call", fake_rmv_api_call)
+    res = await rmv.search_stations("Nowhere", max_results=5)
+    assert res == "No stations found"
+
+@pytest.mark.asyncio
+async def test_search_stations_error(monkeypatch):
+    async def fake_rmv_api_call(endpoint, params):
+        return {"error": "API down"}
+
+    monkeypatch.setattr(rmv, "rmv_api_call", fake_rmv_api_call)
+    res = await rmv.search_stations("Frankfurt")
+    assert res == "Error: API down"
+
+@pytest.mark.asyncio
+async def test_get_connections_success(monkeypatch):
+    async def fake_rmv_api_call(endpoint, params):
+        return {
+            "Trip": [
+                {
+                    "duration": "00:30:00",
+                    "chg": 1,
+                    "LegList": {
+                        "Leg": [
+                            {
+                                "type": "train",
+                                "name": "S1",
+                                "direction": "Ost",
+                                "Origin": {"name": "A", "time": "10:00", "track": "1"},
+                                "Destination": {"name": "B", "time": "10:30"}
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+
+    monkeypatch.setattr(rmv, "rmv_api_call", fake_rmv_api_call)
+    res = await rmv.get_connections("A_id", "B_id", num_trips=1, departure_time="10:00")
+    data = ast.literal_eval(res)
+    assert data["count"] == 1
+    assert data["origin"] == "A"
+    assert data["destination"] == "B"
+    assert data["trips"][0]["duration"] == "00:30:00"
+    assert data["trips"][0]["transfers"] == 1
+    assert data["trips"][0]["legs"][0]["name"] == "S1"
+
+@pytest.mark.asyncio
+async def test_get_connections_no_trip(monkeypatch):
+    async def fake_rmv_api_call(endpoint, params):
+        return {}  # no Trip key
+
+    monkeypatch.setattr(rmv, "rmv_api_call", fake_rmv_api_call)
+    res = await rmv.get_connections("A_id", "B_id")
+    assert res == "No connections found"
+
+@pytest.mark.asyncio
+async def test_get_connections_error(monkeypatch):
+    async def fake_rmv_api_call(endpoint, params):
+        return {"error": "timeout"}
+
+    monkeypatch.setattr(rmv, "rmv_api_call", fake_rmv_api_call)
+    res = await rmv.get_connections("A_id", "B_id")
+    assert res == "Error: timeout"

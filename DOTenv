@@ -1,0 +1,5 @@
+#
+# get your api key from https://opendata.rmv.de/site/start.html
+# copy DOTenv file to .env and add your key
+#
+RMV_API_KEY=<YOUR_API_KEY>

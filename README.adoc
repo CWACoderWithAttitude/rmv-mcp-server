@@ -1,0 +1,97 @@
+= RMV MCP Server
+
+== TD;DR
+
+MCP Server to enable LLMs to use data on trains, stations and connections provided by RMV, Germany.
+
+== Overview 
+
+RMV MCP Server is a fastmcp-based MCP server that exposes RMV public transport data to LLMs. It uses the RMV API to fetch data on stations, connections, and departures.
+
+=== Architeture Dioagram
+[source,mermaid]
+....
+
+graph TD
+    subgraph RMV_MCP_Server
+        A[rmv_stdio.py] --> B[RMVService]
+        B[RMVService] --> C[RMV API]
+    end
+
+    subgraph Tests
+        D[test_rmv_stdio.py] --> A[rmv_stdio.py]
+        D[test_rmv_stdio.py] --> E[fastmcp.client.Client]
+    end
+
+    subgraph External_Services
+        C[RMV API]
+    end
+
+    subgraph FastMCP_Framework
+        A[rmv_stdio.py] --> F[FastMCP]
+        E[fastmcp.client.Client] --> F[FastMCP]
+    end
+....
+== Prerequisites
+
+To use these server you need to acquire a free RMV API key. You can request one from RMV via the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
+Once vou have it, you can enter it in Claudes config file.
+For local testing you should pit it in the `.env` file.
+
+== How to use
+
+I'll show you how to run the RMV MCP server locally using UV and how to connect it to Claude Desktop.
+To make the service known to Claude Desktop you need to add its configuration to the Claude Desktop config file (see below).
+
+## Claude Desktop Config
+```json
+{
+    "mcpServers": {
+...
+	"rmv-mcp-server": {
+          "command": "/Users/volker/.local/bin/uv",
+          "args": [
+		  "--directory", 
+		  "/Users/volker/Dev/mcp/fast_mcp/rmv-mcp-server",
+		  "run",
+		  "rmv_stdio.py"
+	        ],
+          "env": {
+            "RMV_API_KEY": "<YOUR_API_KEY>"
+          }
+    	}
+    }
+}
+
+```
+
+## Dev
+
+### Run Tests 
+```
+uv run pytest -s
+```
+### Run MCP Servr in Dev Mode
+
+FastMCP provides a development mode that allows you to run and test your MCP server locally. You can use the following commands to start the server in dev mode:
+
+```
+uv run fastmcp dev main.py 
+``` 
+
+This will start the MCP server and open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
+It will open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
+1. Connect to your MCP sever (left column)
+2. Seleczt `Tools`from the top menu.
+3. Click `List Tools` below. It should reveal `search_stations` and `get_connections`.
+   Select one of them.
+4. The right hand side enables you to run the tool and inspect the results.
+
+How cool is that!   
+
+
+
+## Links
+* [Installing UV](https://docs.astral.sh/uv/guides/integration/docker/#installing-uv)
+* [Claude Custom connectors](https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp)
+* Diagram generate with https://marketplace.visualstudio.com/items?itemName=swark.swark[Swark Mermaid Extension]

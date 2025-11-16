@@ -45,9 +45,10 @@ To make the service known to Claude Desktop you need to add its configuration to
 
 === Claude Desktop Config
 [source,json]
+```
 {
     "mcpServers": {
-...
+
 	"rmv-mcp-server": {
           "command": "/Users/volker/.local/bin/uv",
           "args": [
@@ -67,11 +68,12 @@ To make the service known to Claude Desktop you need to add its configuration to
 
 === Dev
 
-==== Run Tests 
+==== Run Tests
+
 [source,bash]
-----
+```
 uv run pytest -s
-----
+```
 
 ==== Run MCP Server in Dev Mode
 

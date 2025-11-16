@@ -1,0 +1,16 @@
+#
+# Run rmv server in dev mode
+# ä
+dev_mode:
+	uv run fastmcp dev rmv_stdio.py
+#
+# Run defined tests. Do not swalllow stdio
+#
+test:
+	uv run pytest -s 
+
+#
+# Run server in stdio mode - for local execution
+#
+run_rmv_stdio:
+	uv run rmv_stdio.py

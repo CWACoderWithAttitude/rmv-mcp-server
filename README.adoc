@@ -4,6 +4,73 @@
 
 MCP Server to enable LLMs to use data on trains, stations and connections provided by RMV, Germany.
 
+== What's this project about?
+
+The aim is to give you a brief introduction into MCP servers. 
+
+To show the usefullness i chose to use the API provided by RMV - the Frankfurt Rhein-Main Verkehrsverbund - which operates public transport in the Frankfurt Rhein-Main area.
+With this MCP server you can query stations, connections and departures from an LLM like Claude.
+We'll use the https://gofastmcp.com/getting-started/welcome[FastMCP] framework to build the MCP server .
+
+== Prerequisites
+
+This example uses python3.13 and UV 0.8.13 to run the MCP server.
+To access station and connection data, you need to acquire an API key. 
+It can be requested free of charge from RMV at the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
+
+> For local testing Copy `DOTEnv` to `.env` and add the API key there.
+
+=== Running MCP Server in Dev Mode
+
+FastMCP provides a development mode that allows you to run and test your MCP server locally.
+
+Start the server in dev mode:
+
+[source,bash]
+----
+uv run fastmcp dev main.py 
+---- 
+
+This will start the MCP server and open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
+It will open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
+
+1. Connect to your MCP sever (left column)
+2. Select `Tools` from the top menu.
+3. Click `List Tools` below.
+    It should reveal `search_stations` and `get_connections`.
+   Select one of them.
+4. The right hand side enables you to run the tool and inspect the results.
+
+How cool is that!   
+
+=== Claude Desktop Config
+
+I'll show you how to run the RMV MCP server locally using UV and how to connect it to Claude Desktop.
+To make the service known to Claude Desktop you need to add its configuration to the Claude Desktop config file (see below).
+
+Once you have it, you can enter it in Claude's config file.
+
+[source,json]
+```
+{
+    "mcpServers": {
+
+	"rmv-mcp-server": {
+          "command": "/Users/volker/.local/bin/uv",
+          "args": [
+		  "--directory", 
+		  "/Users/volker/Dev/mcp/fast_mcp/rmv-mcp-server",
+		  "run",
+		  "rmv_stdio.py"
+	        ],
+          "env": {
+            "RMV_API_KEY": "<YOUR_API_KEY>"
+          }
+    	}
+    }
+}
+
+
 == Overview 
 
 RMV MCP Server is a fastmcp-based MCP server that exposes RMV public transport data to LLMs. It uses the RMV API to fetch data on stations, connections, and departures.
@@ -32,11 +99,7 @@ graph TD
         E[fastmcp.client.Client] --> F[FastMCP]
     end
 ....
-== Prerequisites
 
-To use this server you need to acquire a free RMV API key. You can request one from RMV via the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
-Once you have it, you can enter it in Claude's config file.
-For local testing you should put it in the `.env` file.
 
 == How to use
 
@@ -77,26 +140,6 @@ To make the service known to Claude Desktop you need to add its configuration to
 uv run pytest -s
 ```
 
-==== Run MCP Server in Dev Mode
-
-FastMCP provides a development mode that allows you to run and test your MCP server locally. You can use the following commands to start the server in dev mode:
-
-[source,bash]
-----
-uv run fastmcp dev main.py 
----- 
-
-This will start the MCP server and open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
-It will open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
-
-1. Connect to your MCP sever (left column)
-2. Select `Tools` from the top menu.
-3. Click `List Tools` below.
-    It should reveal `search_stations` and `get_connections`.
-   Select one of them.
-4. The right hand side enables you to run the tool and inspect the results.
-
-How cool is that!   
 
 
 

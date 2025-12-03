@@ -4,17 +4,23 @@
 
 MCP Server to enable LLMs to use data on trains, stations and connections provided by RMV, Germany.
 
+== What are MCP servers?
+MCP servers enable you to ask questions on YOUR data (in DBs, APIs, fielsystems,...) with natural language.
+https://www.anthropic.com/news/model-context-protocol[Anthropics (the inventors) full blown explanation] on MCPs.
+
 == What's this project about?
 
 The aim is to give you a brief introduction into MCP servers. 
 
 To show the usefullness i chose to use the API provided by RMV - the Frankfurt Rhein-Main Verkehrsverbund - which operates public transport in the Frankfurt Rhein-Main area.
+
 With this MCP server you can query stations, connections and departures from an LLM like Claude.
 We'll use the https://gofastmcp.com/getting-started/welcome[FastMCP] framework to build the MCP server .
 
 == Prerequisites
 
-This example uses python3.13 and UV 0.8.13 to run the MCP server.
+This example uses `python3.13` and `UV 0.8.13` to run the MCP server.
+
 To access station and connection data, you need to acquire an API key. 
 It can be requested free of charge from RMV at the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
 

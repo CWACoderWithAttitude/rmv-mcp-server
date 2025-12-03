@@ -107,6 +107,7 @@ Once you have it, you can enter it in Claude's config file.
 
 After adding this restart Claude Desktop is needed.
 
+> You can tweak its settings and configuration in the `Settings` -> `Connectors` menu.
 
 
 ## Links

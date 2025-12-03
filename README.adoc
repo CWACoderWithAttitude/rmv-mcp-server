@@ -1,34 +1,39 @@
 = RMV MCP Server
 
+Imagine you could ask questions about train connections, departure times, and station information using natural language.
+Like this one:
+```
+I'd like to go from Gross Gerau to the alt bischofsheim restaurant. 
+tomorrow evening.
+```
+https://claude.ai/share/46422223-8b62-4a44-ae0f-49c4575c9d4f[Which gets you exactly the information you need. ]
+
 == TL;DR
 
-MCP Server to enable LLMs to use data on trains, stations and connections provided by RMV, Germany.
-
-== What are MCP servers?
-MCP servers enable you to ask questions on YOUR data (in DBs, APIs, fielsystems,...) with natural language.
-https://www.anthropic.com/news/model-context-protocol[Anthropics (the inventors) full blown explanation] on MCPs.
+MCP servers are addons to LLMs that enable the users to ask questions on YOUR data (in DBs, APIs, fielsystems,...) with natural language.
+This MCP Server enables LLMs to use data on trains, stations and connections provided by RMV, Germany.
 
 == What's this project about?
 
-The aim is to give you a brief introduction into MCP servers. 
+To be honest the above description does not tell the full story. The MCP inventor Anthropic has a https://www.anthropic.com/news/model-context-protocol[full blown explanation] on MCPs.
 
-To show the usefullness i chose to use the API provided by RMV - the Frankfurt Rhein-Main Verkehrsverbund - which operates public transport in the Frankfurt Rhein-Main area.
-
-With this MCP server you can query stations, connections and departures from an LLM like Claude.
-We'll use the https://gofastmcp.com/getting-started/welcome[FastMCP] framework to build the MCP server .
+This MCP server enables you to query stations, connections and departures from an LLM like Claude.
+It is built using the https://gofastmcp.com/getting-started/welcome[FastMCP] framework.
 
 == Prerequisites
 
-This example uses `python3.13` and `UV 0.8.13` to run the MCP server.
+This example is build upon `python3.13` and `UV 0.8.13`.
+
+It usese https://claude.com[Claude Desktop] as LLM client and chat interface.
 
 To access station and connection data, you need to acquire an API key. 
 It can be requested free of charge from RMV at the https://opendata.rmv.de/site/start.html[RMV Open Data Portal].
 
-> For local testing Copy `DOTEnv` to `.env` and add the API key there.
+Copy `DOTEnv` to `.env` and add the API key there.
 
 === Running MCP Server in Dev Mode
 
-FastMCP provides a development mode that allows you to run and test your MCP server locally.
+FastMCP provides a development mode that allows us to run and test our MCP server locally.
 
 Start the server in dev mode:
 
@@ -37,8 +42,7 @@ Start the server in dev mode:
 uv run fastmcp dev main.py 
 ---- 
 
-This will start the MCP server and open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
-It will open the MCP Inspector in your browser, allowing you to inspect and debug your MCP server.
+This will start the MCP server and open the MCP Inspector in your browser. Allowing you to inspect and debug your MCP server.
 
 1. Connect to your MCP sever (left column)
 2. Select `Tools` from the top menu.
@@ -56,96 +60,30 @@ To make the service known to Claude Desktop you need to add its configuration to
 
 Once you have it, you can enter it in Claude's config file.
 
+> Don't forget to update the file with your API key!
+
 [source,json]
 ```
 {
     "mcpServers": {
 
-	"rmv-mcp-server": {
-          "command": "/Users/volker/.local/bin/uv",
-          "args": [
-		  "--directory", 
-		  "/Users/volker/Dev/mcp/fast_mcp/rmv-mcp-server",
-		  "run",
-		  "rmv_stdio.py"
-	        ],
-          "env": {
-            "RMV_API_KEY": "<YOUR_API_KEY>"
-          }
-    	}
+        "my_rmv-mcp-server": {
+            "command": "/Users/volker/.local/bin/uv",
+            "args": [
+                "--directory", 
+                "/Users/volker/Dev/mcp/fast_mcp/rmv-mcp-server",
+                "run",
+                "rmv_stdio.py"
+            ],
+            "env": {
+                "RMV_API_KEY": "<YOUR_API_KEY>"
+            }
+        }
     }
 }
-
-
-== Overview 
-
-RMV MCP Server is a fastmcp-based MCP server that exposes RMV public transport data to LLMs. It uses the RMV API to fetch data on stations, connections, and departures.
-
-=== Architecture Diagram
-[source,mermaid]
-....
-
-graph TD
-    subgraph RMV_MCP_Server
-        A[rmv_stdio.py] --> B[RMVService]
-        B[RMVService] --> C[RMV API]
-    end
-
-    subgraph Tests
-        D[test_rmv_stdio.py] --> A[rmv_stdio.py]
-        D[test_rmv_stdio.py] --> E[fastmcp.client.Client]
-    end
-
-    subgraph External_Services
-        C[RMV API]
-    end
-
-    subgraph FastMCP_Framework
-        A[rmv_stdio.py] --> F[FastMCP]
-        E[fastmcp.client.Client] --> F[FastMCP]
-    end
-....
-
-
-== How to use
-
-I'll show you how to run the RMV MCP server locally using UV and how to connect it to Claude Desktop.
-To make the service known to Claude Desktop you need to add its configuration to the Claude Desktop config file (see below).
-
-=== Claude Desktop Config
-[source,json]
-```
-{
-    "mcpServers": {
-
-	"rmv-mcp-server": {
-          "command": "/Users/volker/.local/bin/uv",
-          "args": [
-		  "--directory", 
-		  "/Users/volker/Dev/mcp/fast_mcp/rmv-mcp-server",
-		  "run",
-		  "rmv_stdio.py"
-	        ],
-          "env": {
-            "RMV_API_KEY": "<YOUR_API_KEY>"
-          }
-    	}
-    }
-}
-
 ```
 
-=== Dev
-
-> I like Makefiles. I use them as part of my documentation. You can find some of the mentioned commands in the provided `Makefile`.
-
-==== Run Tests
-
-[source,bash]
-```
-uv run pytest -s
-```
-
+After adding this restart Claude Desktop is needed.
 
 
 

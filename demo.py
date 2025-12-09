@@ -18,7 +18,7 @@ async def process_data(input: str) -> str:
     """Process data on the server"""
     key = get_key()
     if "-" in key:
-        return f"Processed with key: {key.split('-')[0]wip}"
+        return f"Processed with key: {key.split('-')[0]}"
     return f"Processed: {input}"
 
 

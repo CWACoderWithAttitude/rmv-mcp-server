@@ -4,7 +4,7 @@ mcp = FastMCP("My Server")
 
 
 @mcp.tool
-def process_data(input: str) -> str:
+async def process_data(input: str) -> str:
     """Process data on the server"""
     return f"Processed: {input}"
 

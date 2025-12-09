@@ -3,19 +3,20 @@ RMV Open Data MCP Server
 Provides access to RMV (Rhein-Main-Verkehrsverbund) public transport data
 """
 
-from dotenv import load_dotenv
+import os
+
 from fastmcp import FastMCP
 
 from rmv_service import RMVService
 
-load_dotenv()
-
 # Initialize FastMCP server
 mcp = FastMCP("RMV Transit Info")
 print(f">>> mcp: {mcp}")
-
+api_key: str = os.getenv(
+    "RMV_API_KEY", "did you set the RMV_API_KEY environment variable?"
+)
 # Initialize RMV service
-rmv_service = RMVService()
+rmv_service = RMVService(api_key=api_key)
 
 
 @mcp.tool()

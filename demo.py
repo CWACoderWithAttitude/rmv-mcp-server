@@ -1,9 +1,11 @@
+import logging
 import os
 from datetime import datetime
 from typing import Optional
 
 import httpx
 from fastmcp import Context, FastMCP
+from fastmcp.utilities.logging import get_logger
 
 # from rmv_service import RMVService
 
@@ -14,11 +16,13 @@ class RMVService:
     """Service class for RMV Open Data API operations"""
 
     def __init__(self, api_key: str = ""):
+        self.logger = get_logger(name=__name__)
+        self.logger.setLevel(level=logging.DEBUG)
         self.api_base = "https://www.rmv.de/hapi"
         self.api_key = api_key or os.getenv(
             "RMV_API_KEY", "did you set the RMV_API_KEY environment variable?"
         )
-
+        self.logger.debug(f"Initialized RMVService with API-Base-URL: {self.api_base}")
         if not self.api_key:
             print(">>> Warning: RMV_API_KEY environment variable not set!")
         else:
@@ -41,7 +45,9 @@ class RMVService:
             except Exception as e:
                 return {"error": f"Unexpected error: {str(e)}"}
 
-    async def search_stations(self, query: str, max_results: int = 10) -> str:
+    async def search_stations(
+        self, query: str, max_results: int = 10, ctx: Context = None
+    ) -> str:
         """
         Search for stations/stops in the RMV network
 
@@ -57,7 +63,9 @@ class RMVService:
             "maxNo": max_results,
             "type": "S",  # S for stations
         }
-
+        await ctx.info(
+            f"Searching Station {query} with max results {max_results}", extra=params
+        )
         result = await self.rmv_api_call("location.name", params)
 
         if "error" in result:
@@ -206,7 +214,7 @@ async def search_stations(
     if ctx:
         await ctx.info(f"Searching station {query}...")
 
-    return await rmv_service.search_stations(query, max_results)
+    return await rmv_service.search_stations(query, max_results, ctx=ctx)
 
 
 @mcp.tool

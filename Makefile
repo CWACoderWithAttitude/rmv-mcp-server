@@ -9,3 +9,11 @@ dev_mode:
 #
 inspect:
 	uv run fastmcp inspect rmv_stdio.py
+run_stream:
+	uv run fastmcp run demo.py --transport streamable-http
+run_stdio:
+	uv run fastmcp run demo.py
+
+uv2pip:
+	# uv pip freeze > requirements.txt
+	uv pip compile pyproject.toml -o requirements.txt

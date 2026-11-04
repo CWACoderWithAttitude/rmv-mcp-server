@@ -40,7 +40,7 @@ cyclopts==4.3.0
     # via fastmcp
 diskcache==5.6.3
     # via py-key-value-aio
-dnspython==2.8.0
+dnspython==2.9.0
     # via email-validator
 docstring-parser==0.17.0
     # via cyclopts
